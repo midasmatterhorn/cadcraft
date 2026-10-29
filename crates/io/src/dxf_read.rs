@@ -130,11 +130,7 @@ fn read_budgeted(bytes: &[u8], mut table_cells_left: usize) -> Result<Drawing> {
     place_entities(&mut d, entities, &rx, &paper_block_for, &first_layout);
     // A sortents table orders by the file's entity handles; those follow a renumbered entity.
     for (_, order) in &mut objs.sortents {
-        for h in order.keys_mut() {
-            if let Some(n) = rx.renamed.get(h) {
-                *h = *n;
-            }
-        }
+        *order = order.iter().map(|(h, o)| (rx.renamed.get(h).copied().unwrap_or(*h), *o)).collect();
     }
     apply_sortents(&mut d, &objs.sortents, &rx.brs, &paper_block_for, &first_layout);
     objs.apply(&mut d, &rx);
